@@ -51,7 +51,8 @@ class PasswordDatabase {
     return passwords.map((dbMap) => PasswordItem.fromMap(dbMap)).toList();
   }
 
-  Future<int> delete(String id) async {
+  Future<int> delete(String? id) async {
+    print('delete');
     final db = await instance.database;
 
     return await db.delete(

@@ -17,7 +17,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    loadPasswords();
+    refreshPasswords();
   }
 
   @override
@@ -26,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
     super.dispose();
   }
 
-  Future<List<PasswordItem>> loadPasswords() async {
+  Future<List<PasswordItem>> refreshPasswords() async {
     return PasswordDatabase.instance.readAllPasswords();
   }
 
@@ -44,34 +44,49 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
         body: FutureBuilder<List<PasswordItem>>(
-            future: loadPasswords(),
+            future: refreshPasswords(),
             builder: (BuildContext context,
                 AsyncSnapshot<List<PasswordItem>> snapshot) {
               if (snapshot.hasData && snapshot.data != null) {
                 return snapshot.data!.isNotEmpty
-                    ? ListView(
+                    ? ListView.separated(
                         padding: const EdgeInsets.all(8),
-                        children: snapshot.data!
-                            .map(
-                              (item) => ListTile(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          DetailScreen(item: '$item'),
-                                    ),
-                                  );
-                                },
-                                title: Center(child: Text('item $item')),
-                                subtitle: Center(child: Text('subtitle')),
-                              ),
-                            )
-                            .toList(),
+                        itemCount: snapshot.data!.length,
+                        separatorBuilder: (BuildContext context, int index) =>
+                            const Divider(height: 1),
+                        itemBuilder: (BuildContext context, int index) {
+                          final item = snapshot.data![index];
+                          return ListTile(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DetailScreen(item: '$item'),
+                                ),
+                              );
+                            },
+                            title: Center(
+                              child: Text('Služba: ${item.serviceName}'),
+                            ),
+                            subtitle: Center(
+                              child: Text('Jméno: ${item.userName}'),
+                            ),
+                            trailing: IconButton(
+                              onPressed: () {
+                                PasswordDatabase.instance.delete(item.id);
+                                setState(() {});
+                              },
+                              icon: const Icon(Icons.clear),
+                            ),
+                          );
+                        },
                       )
                     : const Center(child: Text('není žádné heslo uložené'));
               } else {
-                return const CircularProgressIndicator(color: Colors.grey);
+                return const Center(
+                  child: CircularProgressIndicator(color: Colors.grey),
+                );
               }
             }),
         floatingActionButton: FloatingActionButton(
@@ -80,7 +95,8 @@ class _MainScreenState extends State<MainScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => FormScreen()),
-            );
+            ).then((value) => setState(() {}));
+            refreshPasswords();
           },
           child: const Icon(Icons.add, color: Colors.black),
           backgroundColor: Colors.grey,
