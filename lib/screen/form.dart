@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:safe_pass_app/data/password_item.dart';
+import 'package:safe_pass_app/database/db.dart';
 import 'package:safe_pass_app/widget/input_field.dart';
 
-class FormScreen extends StatelessWidget {
+class FormScreen extends StatefulWidget {
   FormScreen({Key? key}) : super(key: key);
+
+  @override
+  State<FormScreen> createState() => _FormScreenState();
+}
+
+class _FormScreenState extends State<FormScreen> {
+  String errorMessage = '';
 
   final _serviceTextController = TextEditingController();
   final _nameTextController = TextEditingController();
@@ -24,23 +33,43 @@ class FormScreen extends StatelessWidget {
           ),
         ),
         body: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               InputField(controller: _serviceTextController, hintText: 'název'),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               InputField(controller: _nameTextController, hintText: 'jméno'),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               InputField(
                   controller: _passwordTextController, hintText: 'heslo'),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
+              if (errorMessage != '')
+                Text(errorMessage, style: const TextStyle(color: Colors.red)),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(primary: Colors.grey),
                 onPressed: () {
-                  // TODO: add a password
+                  if (_serviceTextController.text == '' ||
+                      _nameTextController.text == '' ||
+                      _passwordTextController.text == '') {
+                    setState(() {
+                      errorMessage = 'Vyplňte všechny položky';
+                    });
+                    return;
+                  }
+                  PasswordDatabase.instance.insert(
+                    PasswordItem(
+                      serviceName: _serviceTextController.text,
+                      userName: _nameTextController.text,
+                      password: _passwordTextController.text,
+                    ),
+                  );
+                  Navigator.pop(context);
                 },
-                child: Text('Přidat'),
+                child: const Text(
+                  'Přidat',
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
             ],
           ),
