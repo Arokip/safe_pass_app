@@ -62,7 +62,7 @@ class _MainScreenState extends State<MainScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      DetailScreen(item: '$item'),
+                                      DetailScreen(item: item),
                                 ),
                               );
                             },
