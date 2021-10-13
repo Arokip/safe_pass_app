@@ -16,6 +16,7 @@ dev_dependencies:
   sqflite: ^2.0.0+4
   path: ^1.8.0
   flutter_secure_storage: ^4.2.1
+  uuid: ^3.0.5
 
   flutter_lints: ^1.0.0
 
