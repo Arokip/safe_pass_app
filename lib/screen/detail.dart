@@ -38,15 +38,15 @@ class _DetailScreenState extends State<DetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               DetailLine(
-                text: 'název',
+                text: 'Služba',
                 value: widget.item.serviceName,
               ),
               DetailLine(
-                text: 'jméno',
+                text: 'Jméno',
                 value: widget.item.userName,
               ),
               DetailLine(
-                text: 'heslo',
+                text: 'Heslo',
                 value: isPasswordShown
                     ? widget.item.password
                     : '*' * widget.item.password.length,
@@ -67,7 +67,7 @@ class _DetailScreenState extends State<DetailScreen> {
               const Expanded(
                 child: Align(
                   alignment: Alignment.bottomLeft,
-                  child: Text('kliknutím zkopíruj'),
+                  child: Text('Kliknutím zkopíruj'),
                 ),
               ),
             ],

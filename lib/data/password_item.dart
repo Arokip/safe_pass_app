@@ -15,18 +15,21 @@ class PasswordItem {
     id ??= const Uuid().v4();
   }
 
-  factory PasswordItem.fromMap(Map<String, dynamic> data) {
+  factory PasswordItem.fromMap(Map<String, dynamic> data, String password) {
     return PasswordItem(
         id: data['id'],
         serviceName: data['serviceName'],
         userName: data['userName'],
-        password: data['password']);
+        password: password);
   }
 
   Map<String, dynamic> toMap() => {
         "id": id,
         "serviceName": serviceName,
         "userName": userName,
-        "password": password,
       };
+
+  static String getPasswordId(Map<String, dynamic> data) {
+    return data['id'];
+  }
 }

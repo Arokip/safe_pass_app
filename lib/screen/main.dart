@@ -82,7 +82,7 @@ class _MainScreenState extends State<MainScreen> {
                           );
                         },
                       )
-                    : const Center(child: Text('není žádné heslo uložené'));
+                    : const Center(child: Text('Nemáte žádné heslo uložené'));
               } else {
                 return const Center(
                   child: CircularProgressIndicator(color: Colors.grey),
@@ -94,7 +94,7 @@ class _MainScreenState extends State<MainScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => FormScreen()),
+              MaterialPageRoute(builder: (context) => const FormScreen()),
             ).then((value) => setState(() {}));
             refreshPasswords();
           },

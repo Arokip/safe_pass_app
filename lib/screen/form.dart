@@ -4,7 +4,7 @@ import 'package:safe_pass_app/database/db.dart';
 import 'package:safe_pass_app/widget/input_field.dart';
 
 class FormScreen extends StatefulWidget {
-  FormScreen({Key? key}) : super(key: key);
+  const FormScreen({Key? key}) : super(key: key);
 
   @override
   State<FormScreen> createState() => _FormScreenState();
@@ -37,12 +37,23 @@ class _FormScreenState extends State<FormScreen> {
           child: Column(
             children: [
               const SizedBox(height: 16),
-              InputField(controller: _serviceTextController, hintText: 'název'),
-              const SizedBox(height: 16),
-              InputField(controller: _nameTextController, hintText: 'jméno'),
+              InputField(
+                controller: _serviceTextController,
+                textInputAction: TextInputAction.next,
+                hintText: 'Služba',
+              ),
               const SizedBox(height: 16),
               InputField(
-                  controller: _passwordTextController, hintText: 'heslo'),
+                controller: _nameTextController,
+                textInputAction: TextInputAction.next,
+                hintText: 'Jméno',
+              ),
+              const SizedBox(height: 16),
+              InputField(
+                controller: _passwordTextController,
+                textInputAction: TextInputAction.done,
+                hintText: 'Heslo',
+              ),
               const SizedBox(height: 16),
               if (errorMessage != '')
                 Text(errorMessage, style: const TextStyle(color: Colors.red)),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:path/path.dart';
 import 'package:safe_pass_app/data/password_item.dart';
+import 'package:safe_pass_app/services/secure_storage.dart';
 import 'package:sqflite/sqflite.dart';
 
 class PasswordDatabase {
@@ -10,6 +11,8 @@ class PasswordDatabase {
   static final PasswordDatabase instance = PasswordDatabase._init();
 
   static Database? _database;
+
+  final SecureStorage secureStorage = SecureStorage();
 
   PasswordDatabase._init();
 
@@ -33,7 +36,7 @@ class PasswordDatabase {
 
   Future _createDB(Database db, int version) async {
     await db.execute(
-        'CREATE TABLE $passwordTable (id TEXT PRIMARY KEY, serviceName TEXT, userName TEXT, password TEXT)');
+        'CREATE TABLE $passwordTable (id TEXT PRIMARY KEY, serviceName TEXT, userName TEXT)');
   }
 
   Future<void> insert(PasswordItem password) async {
@@ -43,23 +46,32 @@ class PasswordDatabase {
       password.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+    secureStorage.writeSecureData(password.id!, password.password);
   }
 
   Future<List<PasswordItem>> readAllPasswords() async {
     final db = await instance.database;
     final passwords = await db.query(passwordTable);
-    return passwords.map((dbMap) => PasswordItem.fromMap(dbMap)).toList();
+
+    List<PasswordItem> resultList = [];
+    for (Map<String, Object?> dbMap in passwords) {
+      final passwordId = PasswordItem.getPasswordId(dbMap);
+      String password = await secureStorage.readPassword(passwordId);
+      resultList.add(PasswordItem.fromMap(dbMap, password));
+    }
+    return resultList;
   }
 
-  Future<int> delete(String? id) async {
-    print('delete');
+  Future delete(String? id) async {
+    if (id == null) return;
     final db = await instance.database;
 
-    return await db.delete(
+    await db.delete(
       passwordTable,
       where: 'id = ?',
       whereArgs: [id],
     );
+    secureStorage.deleteSecureData(id);
   }
 
   Future close() async {
